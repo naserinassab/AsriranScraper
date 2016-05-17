@@ -12,7 +12,12 @@ class AsriranCrawlerItem(scrapy.Item):
     # define the fields for your item here like:
     title = scrapy.Field()
     # category = scrapy.Field()
-    url = scrapy.Field()
+    body = scrapy.Field()
     # tags = scrapy.Field()
+
+
+class CraigslistSampleItem(scrapy.Item):
+    title = scrapy.Field()
+    link = scrapy.Field()
 
 

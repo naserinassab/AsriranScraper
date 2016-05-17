@@ -1,23 +1,26 @@
-from scrapy import Spider
+# -*- coding: utf-8 -*-
 from scrapy.selector import Selector
-
 from Asriran_Crawler.items import AsriranCrawlerItem
+from scrapy.spiders import CrawlSpider,Rule
+from scrapy.linkextractors.sgml import SgmlLinkExtractor
 
 
-class StackSpider(Spider):
-    name = "stack"
-    allowed_domains = ["stackoverflow.com"]
+class AsriranSpider(CrawlSpider):
+    name = "asriran"
+    allowed_domains = ["www.asriran.com","asriran.com"]
     start_urls = [
-        "http://stackoverflow.com/questions?pagesize=50&sort=newest",
+      "http://www.asriran.com/fa/archive?service_id=-1&sec_id=-1&cat_id=-1&rpp=100&from_date=1384/01/01&to_date=1395/02/29&p=1",
+      "http://www.asriran.com/fa/archive?service_id=-1&sec_id=-1&cat_id=-1&rpp=100&from_date=1384/01/01&to_date=1395/02/29&p=2",
+      # "http://www.asriran.com/fa/archive?service_id=-1&sec_id=-1&cat_id=-1&rpp=100&from_date=1384/01/01&to_date=1395/02/29&p=3",
+      # "http://www.asriran.com/fa/archive?service_id=-1&sec_id=-1&cat_id=-1&rpp=100&from_date=1384/01/01&to_date=1395/02/29&p=4",
+      # "http://www.asriran.com/fa/archive?service_id=-1&sec_id=-1&cat_id=-1&rpp=100&from_date=1384/01/01&to_date=1395/02/29&p=5",
     ]
+    rules = [Rule(SgmlLinkExtractor(allow=('/fa/news/\d+/', )), callback='parse_item', follow=False)]
 
-    def parse(self, response):
-        questions = Selector(response).xpath('//div[@class="summary"]/h3')
 
-        for question in questions:
-            item = AsriranCrawlerItem()
-            item['title'] = question.xpath(
-                'a[@class="question-hyperlink"]/text()').extract()[0]
-            item['url'] = question.xpath(
-                'a[@class="question-hyperlink"]/@href').extract()[0]
-            yield item
+    def parse_item(self, response):
+        item = AsriranCrawlerItem()
+        item['title'] = Selector(response).xpath('//div[@class="title"]/h1/a/text()').extract()
+        item['body'] = Selector(response).xpath('//div[@class="body"]//text()').extract().strip()
+
+        yield item
