@@ -1,23 +1,23 @@
-# -*- coding: utf-8 -*-
-from scrapy.contrib.spiders import Rule, CrawlSpider
-import re
+from scrapy import Spider
+from scrapy.selector import Selector
+
 from Asriran_Crawler.items import AsriranCrawlerItem
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 
-class AsriranSpider(CrawlSpider):
-    name = "asriran"
-    allowed_domains = ["asriran.com"]
-    start_urls = (
-        'http://www.asriran.com/fa/archive',
-    )
-    #rules = (Rule(SgmlLinkExtractor(allow=[r'fa/news/\d+']), callback='parse', follow=True),)
+class StackSpider(Spider):
+    name = "stack"
+    allowed_domains = ["stackoverflow.com"]
+    start_urls = [
+        "http://stackoverflow.com/questions?pagesize=50&sort=newest",
+    ]
 
     def parse(self, response):
-        title = response.xpath('//*[@class="title"]/text()').extract()
-        title = ' '.join(title)
-        body = response.xpath('//*[@class="body"]/text()').extract()
-        body = ' '.join(body)
-        item = AsriranCrawlerItem(title=title,
-          body=body)
-        return item
+        questions = Selector(response).xpath('//div[@class="summary"]/h3')
+
+        for question in questions:
+            item = AsriranCrawlerItem()
+            item['title'] = question.xpath(
+                'a[@class="question-hyperlink"]/text()').extract()[0]
+            item['url'] = question.xpath(
+                'a[@class="question-hyperlink"]/@href').extract()[0]
+            yield item
