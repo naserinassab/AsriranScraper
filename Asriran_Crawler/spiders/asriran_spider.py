@@ -3,7 +3,7 @@ from scrapy.selector import Selector
 from Asriran_Crawler.items import AsriranCrawlerItem
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.linkextractors.sgml import SgmlLinkExtractor
-import os
+
 
 class AsriranSpider(CrawlSpider):
     name = "asriran"
@@ -22,5 +22,5 @@ class AsriranSpider(CrawlSpider):
         item = AsriranCrawlerItem()
         item['title'] = Selector(response).xpath('//div[@class="title"]/h1/a/text()').extract()
         item['body'] = ''.join(Selector(response).xpath('//div[@class="body"]//text()').extract()).strip()
-        item['body'] = item['body'].replace('\"','').replace("\'",'').replace(u"«","").replace(u"»","").replace(",","").replace(os.linesep,"")
+        item['body'] = item['body'].replace('\"','').replace("\'",'').replace(u"«","").replace(u"»","").replace(",","")
         yield item
