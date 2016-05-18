@@ -21,6 +21,6 @@ class AsriranSpider(CrawlSpider):
     def parse_item(self, response):
         item = AsriranCrawlerItem()
         item['title'] = Selector(response).xpath('//div[@class="title"]/h1/a/text()').extract()
-        item['body'] = ''.join(Selector(response).xpath('//div[@class="body"]//text()').extract()).strip()
-        item['body'] = item['body'].replace('\"','').replace("\'",'').replace(u"«","").replace(u"»","").replace(",","")
+        item['body'] = ''.join([x.strip() for x in Selector(response).xpath('//div[@class="body"]//text()').extract()])
+        # item['body'] = item['body'].replace('\"','').replace("\'",'').replace(u"«","").replace(u"»","").replace(",","")
         yield item
