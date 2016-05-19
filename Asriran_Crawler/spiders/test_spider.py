@@ -9,8 +9,7 @@ class MySpider(CrawlSpider):
     start_urls = ["http://sfbay.craigslist.org/search/npo"]
 
     def parse(self, response):
-        hxs = Selector(response)
-        titles = hxs.xpath("//span[@class='pl']")
+        titles = Selector(response).xpath("//span[@class='pl']")
         items = []
         for title in titles:
             item = CraigslistSampleItem()
